@@ -102,7 +102,10 @@ func exec(input, output string, _e interface{}) {
 
 	// タグをリスト
 	_t := entry["tags"]
-	tags := _t.([]interface{})
+	var tags []interface{}
+	if _t != nil {
+		tags = _t.([]interface{})
+	}
 	var tagArray []string
 	for _, tag := range tags {
 		tagArray = append(tagArray, tag.(string))
@@ -201,7 +204,7 @@ func exec(input, output string, _e interface{}) {
 }
 
 func copyFile(srcPath, dstPath string) {
-	log.Println(srcPath, dstPath)
+	//log.Println(srcPath, dstPath)
 	src, err := os.Open(srcPath)
 	if err != nil {
 		panic(err)
@@ -280,9 +283,7 @@ func main() {
 	cnt := 0
 	for _, _e := range entries {
 		cnt += 1
-		if cnt < 20 {
-			exec(filepath.Dir(*inputFilePath), *outputFilePath, _e)
-		}
+		exec(filepath.Dir(*inputFilePath), *outputFilePath, _e)
 	}
 	log.Println(cnt)
 
