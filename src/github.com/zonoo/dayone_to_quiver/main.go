@@ -97,7 +97,6 @@ func exec(input, output string, _e interface{}) {
 		text = entry["text"].(string)
 	} else if _, ok := entry["richText"]; ok {
 		text = entry["richText"].(string)
-		log.Println(text)
 	}
 
 	// タグをリスト
@@ -107,8 +106,14 @@ func exec(input, output string, _e interface{}) {
 		tags = _t.([]interface{})
 	}
 	var tagArray []string
+	var tagStr string
 	for _, tag := range tags {
-		tagArray = append(tagArray, tag.(string))
+		tagStr = tag.(string)
+		tagArray = append(tagArray, tagStr)
+	}
+	// タグが要素 0 だと正常に import されないので dummy 設定
+	if len(tagArray) == 0 {
+		tagArray = append(tagArray, "notag")
 	}
 
 	// Quiver ディレクトリつくる
@@ -159,9 +164,6 @@ func exec(input, output string, _e interface{}) {
 
 	lines := strings.Split(text, "\n")
 	title := lines[0]
-	if len(title) > 50 {
-		title = title[0:50]
-	}
 
 	// create meta.json
 	meta := NewQuiverEntryMeta()
@@ -292,10 +294,11 @@ func main() {
 		panic(err)
 	}
 	defer _f.Close()
-	_f.Write([]byte(`{
-  "name" : "DayoneToQuiver",
-  "uuid" : "DayoneToQuiver"
+	//uuid := strings.Replace(filepath.Base(*outputFilePath), filepath.Ext(*outputFilePath), "", -1)
+	uuid := "DayOne"
+	_f.Write([]byte(fmt.Sprintf(`{
+  "name" : "%s",
+  "uuid" : "%s"
 }
-`))
-
+`, uuid, uuid)))
 }
